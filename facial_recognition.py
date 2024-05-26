@@ -17,7 +17,6 @@ for name in os.listdir(KNOWN_FACES_DIR):
 
     # Next we load every file of faces of known person
 
-
         # Load an image
         image = face_recognition.load_image_file(f'{KNOWN_FACES_DIR}/{name}/{filename}')
 
