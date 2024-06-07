@@ -16,18 +16,17 @@ known_names = []
 for name in os.listdir(KNOWN_FACES_DIR):
 
     # Next we load every file of faces of known person
+    # Load an image
+    image = face_recognition.load_image_file(f'{KNOWN_FACES_DIR}/{name}')
 
-        # Load an image
-        image = face_recognition.load_image_file(f'{KNOWN_FACES_DIR}/{name}/{filename}')
+    # Get 128-dimension face encoding
+    # Always returns a list of found faces, for this purpose we take first face only
+    # (assuming one face per image as you can't be twice on one image)
+    encoding = face_recognition.face_encodings(image)[0]
 
-        # Get 128-dimension face encoding
-        # Always returns a list of found faces, for this purpose we take first face only
-        # (assuming one face per image as you can't be twice on one image)
-        encoding = face_recognition.face_encodings(image)[0]
-
-        # Append encodings and name
-        known_faces.append(encoding)
-        known_names.append(name)
+    # Append encodings and name
+    known_faces.append(encoding)
+    known_names.append(name)
 print('Processing unknown faces...')
 # Now let's loop over a folder of faces we want to label
 for filename in os.listdir(UNKNOWN_FACES_DIR):
@@ -44,7 +43,7 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
         # We use compare_faces (but might use face_distance as well)
         # Returns array of True/False values in order of passed known_faces
         results = face_recognition.compare_faces(known_faces, face_encoding, TOLERANCE)
-        match = none
+        match = None
         if True in results:
             match = known_names[results.index(True)]
             print(f"Match found: {match}")
@@ -52,7 +51,10 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
             top_left = (face_location[3], face_location[0])
             bottom_right = (face_location[1], face_location[2])
             color = [0,255,0]
-            cv2.rectangle(image, top_left)
+            print(f"Rectangle Configs: {top_left}, {bottom_right}, {color}, {FRAME_THICKNESS}")
+            print(f"Image is: {image}")
+
+            cv2.rectangle(image, top_left, bottom_right, color, FRAME_THICKNESS)
             top_left = (face_location[3], face_location[2])
             bottom_right = (face_location[1], face_location[2]+22)
             cv2.rectangle(image, top_left, bottom_right, color, cv2.FILLED)
